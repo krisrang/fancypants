@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/codegangsta/cli"
+	"github.com/krisrang/fancypants/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/krisrang/fancypants/handlers"
 )
 
