@@ -1,1 +1,1 @@
-web: fancypants --port $PORT --path /dirmount --sendfile=true
+web: fancypants --port $PORT --path /dirmount

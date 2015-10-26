@@ -29,17 +29,12 @@ func main() {
 			Value: "8080",
 			Usage: "port to serve on",
 		},
-		cli.BoolFlag{
-			Name:  "sendfile",
-			Usage: "use x-accel-redirect flag instead of sending files",
-		},
 	}
 	app.Run(os.Args)
 }
 
 func serve(c *cli.Context) {
 	port := c.GlobalString("port")
-	accel := c.GlobalBool("sendfile")
 
 	fullPath, err := filepath.Abs(c.GlobalString("path"))
 	if err != nil {
@@ -49,7 +44,7 @@ func serve(c *cli.Context) {
 	logger := log.New(os.Stderr, "", log.Flags())
 
 	mux := http.DefaultServeMux
-	mux.HandleFunc("/", handlers.Autodir(accel, fullPath, http.FileServer(http.Dir(fullPath))))
+	mux.HandleFunc("/", handlers.Autodir(fullPath, http.FileServer(http.Dir(fullPath))))
 
 	loggingHandler := handlers.NewApacheLoggingHandler(mux, logger)
 	server := &http.Server{
