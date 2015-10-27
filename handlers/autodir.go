@@ -19,11 +19,10 @@ func Autodir(path string, h http.Handler) http.HandlerFunc {
 				http.ServeFile(w, r, indexPath)
 				return
 			}
-		}
 
-		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-			http.NotFound(w, r)
-			return
+			if stat, err := os.Stat(fullPath); err == nil && stat.Mode().IsDir() {
+				// this is a directory
+			}
 		}
 
 		http.ServeFile(w, r, fullPath)

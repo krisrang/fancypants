@@ -9,6 +9,10 @@
 			"ImportPath": "github.com/codegangsta/cli",
 			"Comment": "1.2.0-139-g142e6cd",
 			"Rev": "142e6cd241a4dfbf7f07a018f1f8225180018da4"
+		},
+		{
+			"ImportPath": "github.com/thoas/stats",
+			"Rev": "54ed61c2b47e263ae2f01b86837b0c4bd1da28e8"
 		}
 	]
 }

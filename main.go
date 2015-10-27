@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/krisrang/fancypants/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/krisrang/fancypants/Godeps/_workspace/src/github.com/thoas/stats"
 	"github.com/krisrang/fancypants/handlers"
 )
 
@@ -42,14 +44,29 @@ func serve(c *cli.Context) {
 	}
 
 	logger := log.New(os.Stderr, "", log.Flags())
+	stat := stats.New()
 
 	mux := http.DefaultServeMux
-	mux.HandleFunc("/", handlers.Autodir(fullPath, http.FileServer(http.Dir(fullPath))))
 
-	loggingHandler := handlers.NewApacheLoggingHandler(mux, logger)
+	mux.HandleFunc("/stats", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		bytes, err := json.Marshal(stat.Data())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		w.Write(bytes)
+	}))
+
+	mux.HandleFunc("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		stat.ServeHTTP(w, r, handlers.Autodir(fullPath, http.FileServer(http.Dir(fullPath))))
+	}))
+
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: loggingHandler,
+		Handler: handlers.NewApacheLoggingHandler(mux, logger),
 	}
 
 	log.Printf("Listening on %v", port)
