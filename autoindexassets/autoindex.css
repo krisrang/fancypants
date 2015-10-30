@@ -1,0 +1,10 @@
+a:hover {
+    text-decoration: none;
+}
+
+.filerow {
+    padding: 2px 5px;
+}
+.filerow:hover {
+    background: #eee;
+}
