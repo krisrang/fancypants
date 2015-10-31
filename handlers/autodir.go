@@ -139,7 +139,7 @@ func Autodir(path string) http.HandlerFunc {
 		}
 
 		if err == nil && stat.Size() > 10*1024*1024 {
-			w.Header().Set("X-Accel-Redirect", "/moe"+r.URL.Path)
+			w.Header().Set("X-Accel-Redirect", "/kris.moe"+r.URL.Path)
 		} else {
 			http.ServeFile(w, r, fullPath)
 		}

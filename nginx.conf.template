@@ -20,9 +20,9 @@ server {
     proxy_set_header X-Request-Start \$msec;
   }
 
-  location /moe/ {
+  location /kris.moe/ {
     internal;
-    root   /home/kris;
+    root   /home/kris/sites;
   }
 
   include $DOKKU_ROOT/$APP/nginx.conf.d/*.conf;
