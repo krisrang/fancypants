@@ -192,6 +192,7 @@ func Autodir(path string) http.HandlerFunc {
 		// If file is above 10MB use x-accel-redirect to have nginx serve it directly
 		if err == nil && stat.Size() > 10*1024*1024 {
 			w.Header().Set("X-Accel-Redirect", "/kris.moe"+r.URL.Path)
+			w.Header().Set("Content-Disposition", "attachment")
 		} else {
 			http.ServeFile(w, r, fullPath)
 		}
