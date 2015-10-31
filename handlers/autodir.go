@@ -103,6 +103,8 @@ func serveIndex(w http.ResponseWriter, r *http.Request, path string) {
 	urlPath := r.URL.Path
 	if urlPath == "/" {
 		urlPath = ""
+	} else if string(urlPath[len(urlPath)-1]) == "/" {
+		urlPath = urlPath[0 : len(urlPath)-1]
 	}
 
 	results, err := ioutil.ReadDir(path)
