@@ -23,6 +23,7 @@ server {
   location /kris.moe/ {
     internal;
     root   /home/kris/sites;
+    add_header Content-Disposition attachment;
   }
 
   include $DOKKU_ROOT/$APP/nginx.conf.d/*.conf;
