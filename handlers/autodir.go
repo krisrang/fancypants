@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/krisrang/fancypants/Godeps/_workspace/src/github.com/dustin/go-humanize"
 )
@@ -43,11 +44,12 @@ const (
 		{{range .Files}}
 			<div class="row filerow">
 				{{if .IsDir}}
-					<a href="{{$p}}/{{.Name}}" class="col-lg-10">{{.Name}}/</a>
-					<div class="col-lg-2">-</div>
+					<a href="{{$p}}/{{.Name}}" class="col-lg-9">{{.Name}}/</a>
+					<div class="col-lg-3 text-right">-</div>
 				{{else}}
-					<a href="{{$p}}/{{.Name}}" class="col-lg-10">{{.Name}}</a>
-					<div class="col-lg-2">{{sizeHuman .Size}}</div>
+					<a href="{{$p}}/{{.Name}}" class="col-lg-9">{{.Name}}</a>
+					<div class="col-lg-1 text-right">{{sizeHuman .Size}}</div>
+					<div class="col-lg-2 text-right">{{timeHuman .ModTime}}</div>
 				{{end}}
 			</div>
 		{{end}}
@@ -66,8 +68,13 @@ func init() {
 		return humanize.Bytes(uint64(size))
 	}
 
+	timeHuman := func(time time.Time) string {
+		return time.Format("02 Jan 2006 15:04")
+	}
+
 	funcMap := template.FuncMap{
 		"sizeHuman": sizeHuman,
+		"timeHuman": timeHuman,
 	}
 
 	t = template.Must(template.New("template").Funcs(funcMap).Parse(tmpl))
@@ -183,6 +190,7 @@ func Autodir(path string) http.HandlerFunc {
 		// If file is above 10MB use x-accel-redirect to have nginx serve it directly
 		if err == nil && stat.Size() > 10*1024*1024 {
 			w.Header().Set("X-Accel-Redirect", "/kris.moe"+r.URL.Path)
+			w.Header().Set("Content-Disposition", "attachment")
 		} else {
 			http.ServeFile(w, r, fullPath)
 		}
