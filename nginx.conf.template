@@ -22,7 +22,7 @@ server {
 
   location /moe/ {
     internal;
-    root   /home/kris/moe;
+    root   /home/kris;
   }
 
   include $DOKKU_ROOT/$APP/nginx.conf.d/*.conf;
