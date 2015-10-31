@@ -124,8 +124,9 @@ func serveIndex(w http.ResponseWriter, r *http.Request, path string) {
 func Autodir(path string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fullPath := filepath.Join(path, strings.TrimPrefix(r.URL.Path, "/"))
+		stat, err := os.Stat(fullPath)
 
-		if stat, err := os.Stat(fullPath); err == nil && stat.Mode().IsDir() {
+		if err == nil && stat.Mode().IsDir() {
 			indexPath := filepath.Join(fullPath, "index.html")
 
 			if _, err := os.Stat(indexPath); err == nil {
@@ -137,6 +138,10 @@ func Autodir(path string) http.HandlerFunc {
 			return
 		}
 
-		http.ServeFile(w, r, fullPath)
+		if stat.Size() > 10*1024*1024 {
+			w.Header().Set("X-Accel-Redirect", "/xaccel"+r.URL.Path)
+		} else {
+			http.ServeFile(w, r, fullPath)
+		}
 	})
 }
