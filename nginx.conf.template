@@ -20,7 +20,7 @@ server {
     proxy_set_header X-Request-Start \$msec;
   }
 
-  location /xaccel/ {
+  location /moe/ {
     internal;
     root   /home/kris/moe;
   }
