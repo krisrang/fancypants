@@ -1,10 +1,22 @@
 a:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .filerow {
-    padding: 2px 5px;
+  padding: 2px 5px;
 }
 .filerow:hover {
-    background: #eee;
+  background: #eee;
+}
+
+.filename {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+  .filerow {
+    padding: 5px 5px;
+  }
 }

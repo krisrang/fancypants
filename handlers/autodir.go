@@ -18,10 +18,13 @@ const (
 {{$p := .Path}}
 <html>
 <head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 	<title>Files</title>
 	<link rel="stylesheet" href="/autoindexassets/bootstrap.min.css">
 	<link rel="stylesheet" href="/autoindexassets/bootstrap-theme.min.css">
-	<link rel="stylesheet" href="/autoindexassets/autoindex.css">
+	<link rel="stylesheet" href="/autoindexassets/autoindex.css?{{.Time}}">
 </head>
 <body>
 	<div class="container">
@@ -44,12 +47,14 @@ const (
 		{{range .Files}}
 			<div class="row filerow">
 				{{if .IsDir}}
-					<a href="{{$p}}/{{.Name}}" class="col-lg-9">{{.Name}}/</a>
-					<div class="col-lg-3 text-right">-</div>
+					<a href="{{$p}}/{{.Name}}" class="col-xs-11">{{.Name}}/</a>
+					<div class="col-xs-1 text-right">-</div>
 				{{else}}
-					<a href="{{$p}}/{{.Name}}" class="col-lg-9">{{.Name}}</a>
-					<div class="col-lg-1 text-right">{{sizeHuman .Size}}</div>
-					<div class="col-lg-2 text-right">{{timeHuman .ModTime}}</div>
+					<div class="col-md-9 col-sm-8 col-xs-9 filename">
+						<a href="{{$p}}/{{.Name}}">{{.Name}}</a>
+					</div>
+					<div class="col-md-1 col-sm-1 col-xs-3 text-right">{{sizeHuman .Size}}</div>
+					<div class="col-md-2 col-sm-3 hidden-xs text-right">{{timeHuman .ModTime}}</div>
 				{{end}}
 			</div>
 		{{end}}
@@ -68,13 +73,13 @@ func init() {
 		return humanize.Bytes(uint64(size))
 	}
 
-	timeHuman := func(time time.Time) string {
-		return time.Format("02 Jan 2006 15:04")
-	}
+	// timeHuman := func(time time.Time) string {
+	// 	return time.Format("02 Jan 2006 15:04")
+	// }
 
 	funcMap := template.FuncMap{
 		"sizeHuman": sizeHuman,
-		"timeHuman": timeHuman,
+		"timeHuman": humanize.Time,
 	}
 
 	t = template.Must(template.New("template").Funcs(funcMap).Parse(tmpl))
@@ -89,6 +94,7 @@ type DirInfo struct {
 	Files       []os.FileInfo
 	Breadcrumbs []BreadCrumb
 	Path        string
+	Time        int64
 }
 
 type ByNameCaseInsensitive []os.FileInfo
@@ -127,7 +133,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request, path string) {
 		previousPath = path
 
 		if crumb == "" {
-			name = "/"
+			name = "Home"
 			previousPath = ""
 		}
 
@@ -162,6 +168,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request, path string) {
 		Files:       append(dirs, files...),
 		Breadcrumbs: crumbs,
 		Path:        urlPath,
+		Time:        time.Now().Unix(),
 	}
 
 	w.Header().Set("Content-Type", "text/html")
